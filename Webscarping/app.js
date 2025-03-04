@@ -1,35 +1,28 @@
 const puppeteer = require('puppeteer');
-
+var tableData;
 (async () => {
     // Launch the browser
     const browser = await puppeteer.launch();
-
-    // Open a new page
     const page = await browser.newPage();
 
-    // Navigate to the webpage (replace with your URL)
+    // Navigate to the target webpage
     await page.goto('https://www.shalimarislamiccentre.ca/', {
         waitUntil: 'domcontentloaded',
     });
 
     // Extract table data
-    const tableData = await page.evaluate(() => {
-        // Select all rows within the table body
+    tableData = await page.evaluate(() => {
         const rows = Array.from(document.querySelectorAll('table.table tbody tr'));
-
-        // Extract data from each row
-        return rows.map((row) => {
-            // Get all cells (td elements) in the current row
-            const cells = Array.from(row.querySelectorAll('td'));
-
-            // Return the text content of each cell
-            return cells.map((cell) => cell.textContent.trim());
+        return rows.map(row => {
+            return Array.from(row.querySelectorAll('td')).map(cell => cell.textContent.trim());
         });
     });
 
-    // Print the extracted table data
-    console.log('Extracted Table Data:', tableData);
-
     // Close the browser
     await browser.close();
+
+    console.log(tableData);
+
 })();
+
+
